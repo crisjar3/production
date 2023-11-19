@@ -1,7 +1,9 @@
 import { Job } from "./interfaces/job";
 import { ResponseTable } from "./interfaces/response-tables";
 
-function calculateResult(job: Job, lastFlowTime: number): ResponseTable {
+export function calculateResult(job: Job, lastFlowTime: number): ResponseTable {
+
+    // console.log(job.processingTime, lastFlowTime)
     const currentFlowTime = job.processingTime + lastFlowTime;
     const deliveryDate = job.remainingDays;
     const currentDelay = Math.max(0, currentFlowTime - deliveryDate);
@@ -9,10 +11,11 @@ function calculateResult(job: Job, lastFlowTime: number): ResponseTable {
     return {
         name: job.name,
         processingTime: job.processingTime,
-        remainingDays: job.remainingDays,
-        delay: currentDelay,
+        flowTime: currentFlowTime,
+        // remainingDays: job.remainingDays,
         deliveryDate: deliveryDate,
-        flowTime: currentFlowTime
+        delay: currentDelay,
+
     };
 }
 
