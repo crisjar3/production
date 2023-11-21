@@ -1,17 +1,32 @@
-import { Job } from "./interfaces/job";
-import { ResponseTable } from "./interfaces/response-tables";
-import { calculateResult } from "./tpl";
+// import { Job } from "./interfaces/job";
+// import { ResultsPlaning } from "./interfaces/response-tables";
+// import { calculateResult } from "./Planning";
 
-export function organizeJobs(jobs: Job[]): ResponseTable[] {
-    jobs = jobs.reverse();
+// export function organizeJobs(jobs: Job[]): ResultsPlaning {
+//     jobs = jobs.reverse();
 
-    let lastFlowTime = 0;
+//     let lastFlowTime = 0;
 
-    return jobs.map(job => {
-        const result = calculateResult(job, lastFlowTime);
+//     const jobsPLanned = jobs.map(job => {
+//         const result = calculateResult(job, lastFlowTime);
 
-        lastFlowTime = result.flowTime;
+//         lastFlowTime = result.flowTime;
 
-        return result;
-    });
-}
+//         return result;
+//     });
+
+//     const totalFlowTime = jobsPLanned.reduce((sum, job) => sum + job.flowTime, 0);
+//     const totalProccesingTime = jobsPLanned.reduce((sum, job) => sum + job.processingTime, 0);
+//     const totalDelayTime = jobsPLanned.reduce((sum, job) => sum + job.delay, 0);
+
+
+//     const averageCompletionTime = totalFlowTime / jobs.length;
+
+//     return {
+//         Jobs: jobsPLanned,
+//         AverageCompletionType: averageCompletionTime,
+//         MeasureUse: totalProccesingTime / totalFlowTime,
+//         AverageJobs: totalFlowTime / totalProccesingTime,
+//         AverageDelay: totalDelayTime / jobs.length
+//     }
+// }

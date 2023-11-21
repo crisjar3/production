@@ -1,38 +1,123 @@
-import "./App.css";
-import { organizeJobs } from "./algorithms/fep";
+//interfacae
 import { Job } from "./algorithms/interfaces/job";
-// import { organizeJobs } from "./algorithms/tpl";
+import { ResultsPlaning } from "./algorithms/interfaces/response-tables";
+import { SortStrategies } from "./algorithms/constants/constants";
+
+//functions
+import { JobsOrderPlanning } from "./algorithms/Planning";
+
+//components
 import DataTable from "./components/generics/DataTable";
+import { JobForm } from "./components/jobs/JobForm";
+import { Card } from "./components/planning/Card";
+import FloatingButton from "./components/FloatingButton";
+
+//libraries
+import { toast } from "sonner";
+import { MagicMotion } from "react-magic-motion";
+import React, { useState } from "react";
+import "./App.css";
 
 function App() {
+  const [jobs, setjobs] = useState<Job[]>([]);
+  const [iniatState, setinitialState] = useState(true);
 
-  const jobs: Job[] = [
-    { name: 'Job 101', processingTime: 6, remainingDays: 5 },
-    { name: 'Job 102', processingTime: 7, remainingDays: 3 },
-    { name: 'Job 103', processingTime: 4, remainingDays: 4 },
-    { name: 'Job 104', processingTime: 9, remainingDays: 7 },
-    { name: 'Job 105', processingTime: 5, remainingDays: 2 },
-  ];
+  const [results, setresults] = useState<ResultsPlaning[]>([]);
 
-  const results = organizeJobs(jobs);
-  const nombresAtributos = [
+  const attributeNames = [
     "nombre",
     "tiempo de procesamiento",
-    "tiempo de flujo",
-    "fecha de entrega",
-    "retraso"
+    "dias restantes",
   ];
 
-  console.log(results)
+  const analize = () => {
+    if (jobs.length < 2) {
+      toast.error("por favor agrega al menos dos trabajos!", {
+        duration: 1000,
+      });
+
+      // toast.custom(
+      //   (t) => (
+      //     <div onClick={() => toast.dismiss(t)}>
+      //       por favor agrega al menos un trabajo
+      //     </div>
+      //   ),
+      //   { duration: 10000 }
+      // );
+      return;
+    }
+
+    setinitialState(false);
+
+    const resultFEP = JobsOrderPlanning(jobs, SortStrategies.Reverse);
+    const resultTPL = JobsOrderPlanning(jobs, SortStrategies.ProcessingTime);
+
+    setresults((current) => {
+      return [...current, resultFEP, resultTPL];
+    });
+  };
+
+  const setDefaultState = () => {
+    setinitialState(true);
+    setresults([]);
+    setjobs([]);
+  };
 
   return (
-    <DataTable
-      title='TCP'
-      subtitle='Modo de ordenamiento por tamaño de proceso mas largo'
-      headers={nombresAtributos}
-      rows={results}
-    />
-  )
+    <>
+      <h1 className="text-4xl font-semibold text-center">
+        Planificacion de trabajos
+        <p className="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">
+          Produccion 2
+        </p>
+      </h1>
+      {iniatState && (
+        <JobForm
+          setjobs={setjobs}
+          initialJob={{ name: "", processingTime: 0, remainingDays: 0 }}
+          analize={analize}
+        />
+      )}
+
+      {jobs.length > 0 && (
+        <DataTable
+          title="Trabajos insertados por el usuario"
+          subtitle="Lista de trabajos insertados por Usuari"
+          headers={attributeNames}
+          rows={jobs}
+        />
+      )}
+
+      {jobs.length < 1 && (
+        <h3 className="mt-10">
+          Upps! al parecer aun no has añadido ningun trabajo.
+        </h3>
+      )}
+
+      {!iniatState &&
+        results.map((result, index) => (
+          <MagicMotion>
+            <React.Fragment key={index}>
+              <DataTable
+                title="TCP"
+                subtitle="Modo de ordenamiento por tamaño de proceso mas largo"
+                headers={[
+                  "nombre",
+                  "tiempo de procesamiento",
+                  "tiempo de flujo",
+                  "fecha de entrega",
+                  "retraso",
+                ]}
+                rows={result.Jobs}
+              />
+              <Card {...result} />
+            </React.Fragment>
+          </MagicMotion>
+        ))}
+
+      {!iniatState && <FloatingButton click={setDefaultState} />}
+    </>
+  );
 }
 
 export default App;

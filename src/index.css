@@ -9,7 +9,9 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  
+  --tw-bg-opacity:1;
+  background-color: rgb(17 24 39/var(--tw-bg-opacity));
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
