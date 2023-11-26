@@ -1,7 +1,7 @@
 //interfacae
 import { Job } from "./algorithms/interfaces/job";
-import { ResultsPlaning } from "./algorithms/interfaces/response-tables";
-import { SortStrategies } from "./algorithms/constants/constants";
+import { ResponseView } from "./algorithms/interfaces/response-tables";
+import { Planning } from "./algorithms/constants/constants";
 
 //functions
 import { JobsOrderPlanning } from "./algorithms/Planning";
@@ -22,7 +22,7 @@ function App() {
   const [jobs, setjobs] = useState<Job[]>([]);
   const [iniatState, setinitialState] = useState(true);
 
-  const [results, setresults] = useState<ResultsPlaning[]>([]);
+  const [results, setresults] = useState<ResponseView[]>([]);
 
   const attributeNames = [
     "nombre",
@@ -49,12 +49,15 @@ function App() {
 
     setinitialState(false);
 
-    const resultFEP = JobsOrderPlanning(jobs, SortStrategies.Reverse);
-    const resultTPL = JobsOrderPlanning(jobs, SortStrategies.ProcessingTime);
-
-    setresults((current) => {
-      return [...current, resultFEP, resultTPL];
+    const results = Planning.map((strategy) => {
+      return {
+        Title: strategy.Title,
+        SubTittle: strategy.Subtitle,
+        ...JobsOrderPlanning(jobs, strategy.Sort),
+      };
     });
+
+    setresults((current) => [...current, ...results]);
   };
 
   const setDefaultState = () => {
@@ -71,6 +74,7 @@ function App() {
           Produccion 2
         </p>
       </h1>
+
       {iniatState && (
         <JobForm
           setjobs={setjobs}
@@ -99,8 +103,8 @@ function App() {
           <MagicMotion>
             <React.Fragment key={index}>
               <DataTable
-                title="TCP"
-                subtitle="Modo de ordenamiento por tamaño de proceso mas largo"
+                title={result.Title}
+                subtitle={result.SubTittle}
                 headers={[
                   "nombre",
                   "tiempo de procesamiento",
@@ -113,7 +117,8 @@ function App() {
               <Card {...result} />
             </React.Fragment>
           </MagicMotion>
-        ))}
+        ))
+      }
 
       {!iniatState && <FloatingButton click={setDefaultState} />}
     </>

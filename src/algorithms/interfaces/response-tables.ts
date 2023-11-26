@@ -13,3 +13,8 @@ export type ResultsPlaning = {
     AverageJobs: number;
     AverageDelay: number;
 }
+
+export type ResponseView = ResultsPlaning & {
+    Title: string;
+    SubTittle: string;
+}
