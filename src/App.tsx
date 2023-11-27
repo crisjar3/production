@@ -86,7 +86,7 @@ function App() {
       {jobs.length > 0 && (
         <DataTable
           title="Trabajos insertados por el usuario"
-          subtitle="Lista de trabajos insertados por Usuari"
+          subtitle="Lista de trabajos insertados por Usuario"
           headers={attributeNames}
           rows={jobs}
         />
@@ -114,13 +114,58 @@ function App() {
                 ]}
                 rows={result.Jobs}
               />
-              <Card {...result} />
+              <Card {...result} />              
             </React.Fragment>
           </MagicMotion>
         ))
       }
 
+      {!iniatState && results.length > 0 && (
+            <DataTable
+              title="Analisis de metodos"
+              subtitle="Tabla de valores resultantes"
+              headers={[
+                "Metodo",
+                "Tiempo de terminacion promedio",
+                "Medida de utilizacion",
+                "Promedio de trabajo",
+                "Retraso promedio"
+              ]}
+            rows={results.map(result => (
+              {
+                "Metodo": result.Title,
+                "TTP": result.AverageCompletionType,
+                "MU": result.MeasureUse,
+                "TP": result.AverageJobs,
+                "RP": result.AverageDelay
+              }
+            ))}
+            />
+        )
+      }
+
       {!iniatState && <FloatingButton click={setDefaultState} />}
+
+      {/* Calcular el método más factible */}
+    {results.length > 0 && (
+      <div className="text-center mt-4">
+        <h3 className="text-4xl font-semibold">
+          El método más factible es: 
+        </h3>
+        <h3 className="text-2xl">
+          {results.reduce((minMethod, currentMethod) => {
+            const currentSum = (
+              currentMethod.AverageCompletionType +
+              currentMethod.MeasureUse +
+              currentMethod.AverageJobs +
+              currentMethod.AverageDelay
+            ) / 4;
+
+            return currentSum < minMethod.sum ? { sum: currentSum, method: currentMethod.Title } : minMethod;
+          }, { sum: Number.MAX_SAFE_INTEGER, method: '' }).method}
+        </h3>
+      </div>
+    )}
     </>
   );
 }
